@@ -2,6 +2,7 @@ import 'package:auth/components/custome_button.dart';
 import 'package:auth/components/custome_text_field.dart';
 import 'package:auth/components/square_tile.dart';
 import 'package:auth/pages/register_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatelessWidget {
@@ -12,7 +13,11 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void signInUser() {}
+    void signInUser() async {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: userEmailController.text, password: passwordController.text);
+    }
+
     void forgotPassword() {}
     void signInWithGoogle() {}
     void signInWithFacebook() {}
