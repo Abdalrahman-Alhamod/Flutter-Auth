@@ -1,29 +1,54 @@
 import 'package:auth/components/custome_button.dart';
 import 'package:auth/components/custome_text_field.dart';
 import 'package:auth/components/square_tile.dart';
-import 'package:auth/pages/register_page.dart';
+import 'package:auth/helpers/show_snack_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatelessWidget {
-  LoginPage({super.key});
+class LoginPage extends StatefulWidget {
+  final void Function()? registerUserPage;
+  const LoginPage({super.key, required this.registerUserPage});
   static const id = 'LoginPage';
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   final userEmailController = TextEditingController();
+
   final passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     void signInUser() async {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: userEmailController.text, password: passwordController.text);
+      // showing circular indicator
+      showDialog(
+        context: context,
+        builder: (context) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+      );
+      try {
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+            email: userEmailController.text, password: passwordController.text);
+      } on FirebaseAuthException catch (e) {
+        debugPrint(e.toString());
+        showSnackBar(context, e.code);
+      } finally {
+        //  pop circular indiactor
+        Navigator.pop(context);
+      }
     }
 
     void forgotPassword() {}
     void signInWithGoogle() {}
     void signInWithFacebook() {}
-    void registerUserPage() {
-      Navigator.pushNamed(context, RegisterPage.id);
-    }
+    // void registerUserPage() {
+    //   Navigator.pushNamed(context, RegisterPage.id);
+    // }
 
     return Scaffold(
       backgroundColor: Colors.grey[300],
@@ -167,7 +192,7 @@ class LoginPage extends StatelessWidget {
                           color: Colors.grey.shade700),
                     ),
                     GestureDetector(
-                      onTap: registerUserPage,
+                      onTap: widget.registerUserPage,
                       child: Text(
                         'Register now',
                         style: TextStyle(
