@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../helpers/show_snack_bar.dart';
+import '../services/api_auth.dart';
 
 class RegisterPage extends StatefulWidget {
   final void Function() signInUserPage;
@@ -36,7 +37,10 @@ class _RegisterPageState extends State<RegisterPage> {
       );
       try {
         if (passwordController.text == confirmPasswordController.text) {
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          // await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          //     email: userEmailController.text,
+          //     password: passwordController.text);
+          await ApiAuth().register(
               email: userEmailController.text,
               password: passwordController.text);
         } else {
@@ -45,6 +49,9 @@ class _RegisterPageState extends State<RegisterPage> {
       } on FirebaseAuthException catch (e) {
         debugPrint(e.toString());
         showSnackBar(context, e.code);
+      } catch (e) {
+        debugPrint(e.toString());
+        showSnackBar(context, e.toString());
       } finally {
         //  pop circular indiactor
         Navigator.pop(context);

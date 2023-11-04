@@ -2,6 +2,7 @@ import 'package:auth/components/custome_button.dart';
 import 'package:auth/components/custome_text_field.dart';
 import 'package:auth/components/square_tile.dart';
 import 'package:auth/helpers/show_snack_bar.dart';
+import 'package:auth/services/api_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -32,11 +33,16 @@ class _LoginPageState extends State<LoginPage> {
         },
       );
       try {
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
+        // await FirebaseAuth.instance.signInWithEmailAndPassword(
+        //     email: userEmailController.text, password: passwordController.text);
+        await ApiAuth().signIn(
             email: userEmailController.text, password: passwordController.text);
       } on FirebaseAuthException catch (e) {
         debugPrint(e.toString());
         showSnackBar(context, e.code);
+      } catch (e) {
+        debugPrint(e.toString());
+        showSnackBar(context, e.toString());
       } finally {
         //  pop circular indiactor
         Navigator.pop(context);
