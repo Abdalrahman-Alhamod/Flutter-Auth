@@ -4,13 +4,11 @@ class HomePage extends StatelessWidget {
   const HomePage({super.key});
   static const id = 'HomePage';
 
-  //final user = FirebaseAuth.instance.currentUser;
-  
-
   @override
   Widget build(BuildContext context) {
-    final String userEmail=ModalRoute.of(context)!.settings.arguments as String;
-    
+    final String userEmail =
+        ModalRoute.of(context)!.settings.arguments as String;
+
     void signOutUser() {
       //FirebaseAuth.instance.signOut();
       Navigator.pop(context);

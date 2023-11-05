@@ -4,9 +4,10 @@ import 'package:auth/components/square_tile.dart';
 import 'package:auth/helpers/show_snack_bar.dart';
 import 'package:auth/pages/home_page.dart';
 import 'package:auth/pages/register_page.dart';
-import 'package:auth/services/api_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:email_validator/email_validator.dart';
+import '../services/api_auth.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -17,32 +18,55 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final userEmailController = TextEditingController();
+  static String? email, password;
 
-  final passwordController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+
+  String? Function(String?) emailValidator = (value) {
+    if (value!.isEmpty) {
+      return 'Field is required';
+    } else if (!EmailValidator.validate(email!)) {
+      return 'Invalid Email';
+    } else {
+      return null;
+    }
+  };
+
+  String? Function(String?) passwordValidator = (value) {
+    if (value!.isEmpty) {
+      return 'Field is required';
+    } else if (value.length < 8) {
+      return 'Password should be at least 8 characters';
+    } else {
+      return null;
+    }
+  };
 
   @override
   Widget build(BuildContext context) {
     void signInUser() async {
-      String email = userEmailController.text;
-      String password = passwordController.text;
-
-      // showing circular indicator
-      showDialog(
-        context: context,
-        builder: (context) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        },
-      );
       try {
-        // await FirebaseAuth.instance.signInWithEmailAndPassword(
-        //     email: userEmailController.text, password: passwordController.text);
-        await ApiAuth().signIn(email: email, password: password);
-        // ignore: use_build_context_synchronously
-        Navigator.pop(context);
-        Navigator.pushNamed(context, HomePage.id, arguments: email);
+        if (formKey.currentState!.validate()) {
+          // showing circular indicator
+          showDialog(
+            context: context,
+            builder: (context) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            },
+          );
+
+          // await FirebaseAuth.instance
+          //     .signInWithEmailAndPassword(email: email!, password: password!);
+
+          await ApiAuth().signIn(email: email!, password: password!);
+
+          // ignore: use_build_context_synchronously
+          Navigator.pop(context);
+          // ignore: use_build_context_synchronously
+          Navigator.pushNamed(context, HomePage.id, arguments: email);
+        }
       } on FirebaseAuthException catch (e) {
         Navigator.pop(context);
         debugPrint(e.toString());
@@ -66,155 +90,168 @@ class _LoginPageState extends State<LoginPage> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Logo
-                const Icon(
-                  Icons.lock,
-                  size: 100,
-                ),
+            child: Form(
+              key: formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Logo
+                  const Icon(
+                    Icons.lock,
+                    size: 100,
+                  ),
 
-                // Welcome message
-                const SizedBox(
-                  height: 50,
-                ),
-                Text(
-                  'Welcome back, you have been missed!',
-                  style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.grey.shade700,
-                      fontWeight: FontWeight.bold),
-                ),
+                  // Welcome message
+                  const SizedBox(
+                    height: 50,
+                  ),
+                  Text(
+                    'Welcome back, you have been missed!',
+                    style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey.shade700,
+                        fontWeight: FontWeight.bold),
+                  ),
 
-                // user email textfield
-                const SizedBox(
-                  height: 25,
-                ),
-                CustomeTextField(
-                  controller: userEmailController,
-                  obscureText: false,
-                  hintText: 'Email',
-                ),
+                  // user email textfield
+                  const SizedBox(
+                    height: 25,
+                  ),
+                  CustomeTextField(
+                    validator: emailValidator,
+                    obscureText: false,
+                    hintText: 'Email',
+                    onChanged: (text) {
+                      email = text;
+                      formKey.currentState!.validate();
+                    },
+                    keyboardType: TextInputType.emailAddress,
+                  ),
 
-                // password textfield
-                const SizedBox(
-                  height: 10,
-                ),
-                CustomeTextField(
-                  controller: passwordController,
-                  obscureText: true,
-                  hintText: 'Password',
-                ),
+                  // password textfield
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  CustomeTextField(
+                    validator: passwordValidator,
+                    obscureText: true,
+                    hintText: 'Password',
+                    onChanged: (text) {
+                      password = text;
+                      formKey.currentState!.validate();
+                    },
+                    keyboardType: TextInputType.visiblePassword,
+                  ),
 
-                // forgot password?
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 25.0, vertical: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      GestureDetector(
-                        onTap: forgotPassword,
-                        child: Text(
-                          'Forgot Password?',
-                          style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey.shade700),
+                  // forgot password?
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 25.0, vertical: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        GestureDetector(
+                          onTap: forgotPassword,
+                          child: Text(
+                            'Forgot Password?',
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey.shade700),
+                          ),
                         ),
+                      ],
+                    ),
+                  ),
+
+                  // sign in button
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  CustomeButton(title: 'Sign in', onTap: signInUser),
+
+                  // or continue with
+                  const SizedBox(
+                    height: 30,
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Divider(
+                            thickness: 0.5,
+                            color: Colors.grey.shade400,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text(
+                            'Or Continue with',
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey.shade700),
+                          ),
+                        ),
+                        Expanded(
+                          child: Divider(
+                            thickness: 0.5,
+                            color: Colors.grey.shade400,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // google + facebook sign in button
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SquareTile(
+                          onTap: signInWithGoogle,
+                          imagePath: 'assets/images/google.png'),
+                      const SizedBox(
+                        width: 20,
                       ),
+                      SquareTile(
+                          onTap: signInWithFacebook,
+                          imagePath: 'assets/images/facebook.png')
                     ],
                   ),
-                ),
 
-                // sign in button
-                const SizedBox(
-                  height: 8,
-                ),
-                CustomeButton(title: 'Sign in', onTap: signInUser),
-
-                // or continue with
-                const SizedBox(
-                  height: 30,
-                ),
-
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Divider(
-                          thickness: 0.5,
-                          color: Colors.grey.shade400,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Text(
-                          'Or Continue with',
-                          style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey.shade700),
-                        ),
-                      ),
-                      Expanded(
-                        child: Divider(
-                          thickness: 0.5,
-                          color: Colors.grey.shade400,
-                        ),
-                      ),
-                    ],
+                  // not a member> register now
+                  const SizedBox(
+                    height: 30,
                   ),
-                ),
-
-                // google + facebook sign in button
-                const SizedBox(
-                  height: 30,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SquareTile(
-                        onTap: signInWithGoogle,
-                        imagePath: 'assets/images/google.png'),
-                    const SizedBox(
-                      width: 20,
-                    ),
-                    SquareTile(
-                        onTap: signInWithFacebook,
-                        imagePath: 'assets/images/facebook.png')
-                  ],
-                ),
-
-                // not a member> register now
-                const SizedBox(
-                  height: 30,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Not a member? ',
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey.shade700),
-                    ),
-                    GestureDetector(
-                      onTap: registerUserPage,
-                      child: Text(
-                        'Register now',
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Not a member? ',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Colors.blue.shade600),
+                            color: Colors.grey.shade700),
                       ),
-                    ),
-                  ],
-                )
-              ],
+                      GestureDetector(
+                        onTap: registerUserPage,
+                        child: Text(
+                          'Register now',
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue.shade600),
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
             ),
           ),
         ),
