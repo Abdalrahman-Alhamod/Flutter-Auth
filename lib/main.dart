@@ -25,7 +25,7 @@ class Auth extends StatelessWidget {
         RegisterPage.id: (context) => const RegisterPage(),
       },
       debugShowCheckedModeBanner: false,
-      home: const LoginPage(),
+      initialRoute: 'LoginPage',
     );
   }
 }
