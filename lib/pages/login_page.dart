@@ -2,13 +2,14 @@ import 'package:auth/components/custome_button.dart';
 import 'package:auth/components/custome_text_field.dart';
 import 'package:auth/components/square_tile.dart';
 import 'package:auth/helpers/show_snack_bar.dart';
+import 'package:auth/pages/home_page.dart';
+import 'package:auth/pages/register_page.dart';
 import 'package:auth/services/api_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {
-  final void Function()? registerUserPage;
-  const LoginPage({super.key, required this.registerUserPage});
+  const LoginPage({super.key});
   static const id = 'LoginPage';
 
   @override
@@ -37,24 +38,30 @@ class _LoginPageState extends State<LoginPage> {
         //     email: userEmailController.text, password: passwordController.text);
         await ApiAuth().signIn(
             email: userEmailController.text, password: passwordController.text);
+        // ignore: use_build_context_synchronously
+        Navigator.pop(context);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    HomePage(userEmail: userEmailController.text)));
       } on FirebaseAuthException catch (e) {
+        Navigator.pop(context);
         debugPrint(e.toString());
         showSnackBar(context, e.code);
       } catch (e) {
+        Navigator.pop(context);
         debugPrint(e.toString());
         showSnackBar(context, e.toString());
-      } finally {
-        //  pop circular indiactor
-        Navigator.pop(context);
       }
     }
 
     void forgotPassword() {}
     void signInWithGoogle() {}
     void signInWithFacebook() {}
-    // void registerUserPage() {
-    //   Navigator.pushNamed(context, RegisterPage.id);
-    // }
+    void registerUserPage() {
+      Navigator.pushNamed(context, RegisterPage.id);
+    }
 
     return Scaffold(
       backgroundColor: Colors.grey[300],
@@ -198,7 +205,7 @@ class _LoginPageState extends State<LoginPage> {
                           color: Colors.grey.shade700),
                     ),
                     GestureDetector(
-                      onTap: widget.registerUserPage,
+                      onTap: registerUserPage,
                       child: Text(
                         'Register now',
                         style: TextStyle(

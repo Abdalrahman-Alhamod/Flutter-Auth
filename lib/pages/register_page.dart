@@ -8,8 +8,7 @@ import '../helpers/show_snack_bar.dart';
 import '../services/api_auth.dart';
 
 class RegisterPage extends StatefulWidget {
-  final void Function() signInUserPage;
-  const RegisterPage({super.key, required this.signInUserPage});
+  const RegisterPage({super.key});
   static const id = 'RegisterPage';
 
   @override
@@ -46,6 +45,7 @@ class _RegisterPageState extends State<RegisterPage> {
         } else {
           showSnackBar(context, 'Passwords don\'t match');
         }
+        Navigator.pop(context);
       } on FirebaseAuthException catch (e) {
         debugPrint(e.toString());
         showSnackBar(context, e.code);
@@ -60,9 +60,9 @@ class _RegisterPageState extends State<RegisterPage> {
 
     void signInWithGoogle() {}
     void signInWithFacebook() {}
-    // void signInUserPage() {
-    //   Navigator.pop(context);
-    // }
+    void signInUserPage() {
+      Navigator.pop(context);
+    }
 
     return Scaffold(
       backgroundColor: Colors.grey[300],
@@ -195,7 +195,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           color: Colors.grey.shade700),
                     ),
                     GestureDetector(
-                      onTap: widget.signInUserPage,
+                      onTap: signInUserPage,
                       child: Text(
                         'Login now',
                         style: TextStyle(

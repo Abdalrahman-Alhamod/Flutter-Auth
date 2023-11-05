@@ -1,8 +1,9 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class ApiAuth {
-  String baseUrl = '';
+  String baseUrl = 'https://a46b-5-155-136-252.ngrok-free.app/auth/';
 
   Future<void> signIn({required String email, required String password}) async {
     // decoding data into json body
@@ -12,6 +13,7 @@ class ApiAuth {
     // sending request
     http.Response response = await http.post(url, body: body);
     if (response.statusCode == 200) {
+      debugPrint(response.body.toString());
       // connection success
       var data = jsonDecode(response.body);
       // if server sent an error
@@ -20,7 +22,8 @@ class ApiAuth {
       }
     } else {
       // connection failure
-      throw Exception('Error $response.statusCode');
+      debugPrint(response.statusCode.toString());
+      throw Exception('Error ${response.statusCode.toString()}');
     }
   }
 
@@ -41,7 +44,8 @@ class ApiAuth {
       }
     } else {
       // connection failure
-      throw Exception('Error $response.statusCode');
+      debugPrint(response.statusCode.toString());
+      throw Exception('Error ${response.statusCode.toString()}');
     }
   }
 }
