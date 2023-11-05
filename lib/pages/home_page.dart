@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
@@ -10,7 +11,7 @@ class HomePage extends StatelessWidget {
         ModalRoute.of(context)!.settings.arguments as String;
 
     void signOutUser() {
-      //FirebaseAuth.instance.signOut();
+      FirebaseAuth.instance.signOut();
       Navigator.pop(context);
     }
 

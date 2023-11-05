@@ -6,8 +6,6 @@ import 'package:flutter/material.dart';
 import '../helpers/show_snack_bar.dart';
 import 'package:email_validator/email_validator.dart';
 
-import '../services/api_auth.dart';
-
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
   static const id = 'RegisterPage';
@@ -67,13 +65,15 @@ class _RegisterPageState extends State<RegisterPage> {
             },
           );
 
-          // await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          //     email: email!, password: password!);
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+              email: email!, password: password!);
 
-          await ApiAuth().register(email: email!, password: password!);
+          //await ApiAuth().register(email: email!, password: password!);
 
           // ignore: use_build_context_synchronously
           Navigator.pop(context);
+          // ignore: use_build_context_synchronously
+          showSnackBar(context, 'Registration Completed Successfully');
           // ignore: use_build_context_synchronously
           Navigator.pop(context);
         }

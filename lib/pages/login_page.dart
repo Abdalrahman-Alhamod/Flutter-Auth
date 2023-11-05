@@ -7,7 +7,6 @@ import 'package:auth/pages/register_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
-import '../services/api_auth.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -57,10 +56,10 @@ class _LoginPageState extends State<LoginPage> {
             },
           );
 
-          // await FirebaseAuth.instance
-          //     .signInWithEmailAndPassword(email: email!, password: password!);
+          await FirebaseAuth.instance
+              .signInWithEmailAndPassword(email: email!, password: password!);
 
-          await ApiAuth().signIn(email: email!, password: password!);
+          // await ApiAuth().signIn(email: email!, password: password!);
 
           // ignore: use_build_context_synchronously
           Navigator.pop(context);
