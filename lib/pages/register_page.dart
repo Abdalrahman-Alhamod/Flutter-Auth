@@ -25,6 +25,9 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     void registerUser() async {
+      String email = userEmailController.text;
+      String password = passwordController.text;
+      String confirmPassword = confirmPasswordController.text;
       // showing circular indicator
       showDialog(
         context: context,
@@ -35,13 +38,11 @@ class _RegisterPageState extends State<RegisterPage> {
         },
       );
       try {
-        if (passwordController.text == confirmPasswordController.text) {
+        if (password == confirmPassword) {
           // await FirebaseAuth.instance.createUserWithEmailAndPassword(
           //     email: userEmailController.text,
           //     password: passwordController.text);
-          await ApiAuth().register(
-              email: userEmailController.text,
-              password: passwordController.text);
+          await ApiAuth().register(email: email, password: password);
         } else {
           showSnackBar(context, 'Passwords don\'t match');
         }

@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key, required this.userEmail});
+  const HomePage({super.key});
   static const id = 'HomePage';
 
   //final user = FirebaseAuth.instance.currentUser;
-  final String userEmail;
+  
 
   @override
   Widget build(BuildContext context) {
+    final String userEmail=ModalRoute.of(context)!.settings.arguments as String;
+    
     void signOutUser() {
       //FirebaseAuth.instance.signOut();
       Navigator.pop(context);

@@ -1,3 +1,4 @@
+import 'package:auth/pages/home_page.dart';
 import 'package:auth/pages/login_page.dart';
 import 'package:auth/pages/register_page.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,7 @@ class Auth extends StatelessWidget {
       routes: {
         LoginPage.id: (context) => const LoginPage(),
         RegisterPage.id: (context) => const RegisterPage(),
+        HomePage.id: (context) => const HomePage(),
       },
       debugShowCheckedModeBanner: false,
       initialRoute: 'LoginPage',

@@ -24,6 +24,9 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     void signInUser() async {
+      String email = userEmailController.text;
+      String password = passwordController.text;
+
       // showing circular indicator
       showDialog(
         context: context,
@@ -36,15 +39,10 @@ class _LoginPageState extends State<LoginPage> {
       try {
         // await FirebaseAuth.instance.signInWithEmailAndPassword(
         //     email: userEmailController.text, password: passwordController.text);
-        await ApiAuth().signIn(
-            email: userEmailController.text, password: passwordController.text);
+        await ApiAuth().signIn(email: email, password: password);
         // ignore: use_build_context_synchronously
         Navigator.pop(context);
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    HomePage(userEmail: userEmailController.text)));
+        Navigator.pushNamed(context, HomePage.id, arguments: email);
       } on FirebaseAuthException catch (e) {
         Navigator.pop(context);
         debugPrint(e.toString());
